@@ -30,28 +30,79 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
   <script>
-    // Your exact Firebase config
+    // 1. Your Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyBI4avbS3jlosFI_xxuPhkQ6UQPMiqdxRc",
+      authDomain: "esp32relay-c5b1a.firebaseapp.com",
       databaseURL: "https://esp32relay-c5b1a-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "esp32relay-c5b1a",
+      storageBucket: "esp32relay-c5b1a.firebasestorage.app",
+      messagingSenderId: "687848660895",
+      appId: "1:687848660895:web:a0c4e2ef61391536bbe7aa"
     };
+
     firebase.initializeApp(firebaseConfig);
 
-    const db = firebase.database();
-    const inverterRef = db.ref("/inverter");
+    const allowedEmail = "abc@gmail.com";
+    const allowedPassword = "admin123";
 
-    // Listen for real-time updates from the ESP32
-    inverterRef.on("value", (snapshot) => {
-      const data = snapshot.val();
-      if(data) {
-        // Update the HTML text elements instantly
-        document.getElementById("battVolts").innerText = data.batteryVoltage.toFixed(1);
-        document.getElementById("pvVolts").innerText = data.pvVoltage.toFixed(1);
-        document.getElementById("pvPower").innerText = data.pvPower.toFixed(1);
-        document.getElementById("loadPower").innerText = data.loadPower;
-        document.getElementById("invTemp").innerText = data.invTemp;
+    const loginForm = document.getElementById("loginForm");
+    const dashboard = document.getElementById("dashboard");
+    const loginBtn = document.getElementById("loginBtn");
+
+    // 2. The Login Button Logic
+    loginBtn.addEventListener("click", () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      if(email === allowedEmail && password === allowedPassword){
+        firebase.auth().signInWithEmailAndPassword(email, password)
+          .then(userCredential => {
+            console.log("Signed in as", userCredential.user.email);
+            loginForm.style.display = "none";
+            dashboard.style.display = "flex"; // Show the dashboard cards
+            startTelemetryMonitor(); // Start fetching data ONLY after login
+          })
+          .catch(error => {
+            alert("Firebase login failed: " + error.message);
+          });
+      } else {
+        alert("Invalid email or password.");
       }
     });
+
+    // 3. The Telemetry Listener (Runs after login)
+    function startTelemetryMonitor() {
+      const db = firebase.database();
+      const inverterRef = db.ref("/inverter");
+
+      console.log("Listening for data on /inverter...");
+
+      inverterRef.on("value", (snapshot) => {
+        const data = snapshot.val();
+        console.log("New data received:", data); // Prints data to the F12 Console
+
+        if(data) {
+          // Add optional chaining/checks so if one value is missing, the page doesn't break
+          if(data.batteryVoltage !== undefined) document.getElementById("battVolts").innerText = data.batteryVoltage.toFixed(1);
+          if(data.pvVoltage !== undefined) document.getElementById("pvVolts").innerText = data.pvVoltage.toFixed(1);
+          if(data.pvPower !== undefined) document.getElementById("pvPower").innerText = data.pvPower.toFixed(1);
+          if(data.loadPower !== undefined) document.getElementById("loadPower").innerText = data.loadPower;
+          if(data.invTemp !== undefined) document.getElementById("invTemp").innerText = data.invTemp;
+        }
+      }, (error) => {
+        console.error("Firebase read blocked:", error);
+      });
+    }
+
+    // 4. Logout Logic
+    document.getElementById("logoutBtn").onclick = () => {
+      firebase.auth().signOut().then(() => {
+          dashboard.style.display = "none";
+          loginForm.style.display = "block";
+      });
+    };
   </script>
 </body>
 </html>
+
