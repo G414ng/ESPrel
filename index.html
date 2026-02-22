@@ -2,35 +2,148 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Inverter Telemetry Dashboard</title>
+  <title>Solar & Inverter Telemetry Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    /* Keeping your exact style, just tweaking the cards */
-    body { font-family: Arial, sans-serif; text-align: center; background-color: #f9f9f9; padding-bottom: 40px; }
-    h1 { margin-top: 30px; font-size: 1.8rem; }
-    .card-container { max-width: 1000px; margin: 20px auto; display: flex; flex-wrap: wrap; justify-content: center; }
-    .data-card { background: white; padding: 20px; margin: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 220px; }
-    .data-card h2 { margin-bottom: 5px; font-size: 1.1rem; color: #555; }
-    .data-card p { font-size: 2rem; margin: 10px 0; font-weight: bold; color: #1e88e5; }
-    .unit { font-size: 1rem; color: #888; }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0 10px 40px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      justify-content: space-between;
+    }
+    h1 {
+      margin-top: 30px;
+      font-size: 1.8rem;
+    }
+    /* Login Form Styles */
+    #loginForm {
+      max-width: 400px;
+      margin: 80px auto 20px;
+      background: white;
+      padding: 30px 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    #loginForm input {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 10px 0 20px;
+      font-size: 1rem;
+      border: 1.5px solid #ccc;
+      border-radius: 10px;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+    #loginForm button {
+      width: 100%;
+      background-color: #1e88e5;
+      color: white;
+      padding: 12px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    /* Dashboard & Card Styles */
+    #dashboard {
+      display: none; /* Hidden until logged in */
+      flex-direction: column;
+      align-items: center;
+    }
+    .card-container {
+      max-width: 1000px;
+      margin: 20px auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .data-card {
+      background: white;
+      padding: 20px;
+      margin: 15px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 200px;
+    }
+    .data-card h2 {
+      margin-bottom: 5px;
+      font-size: 1.1rem;
+      color: #555;
+    }
+    .data-card p {
+      font-size: 2rem;
+      margin: 10px 0;
+      font-weight: bold;
+      color: #1e88e5;
+    }
+    .unit {
+      font-size: 1rem;
+      color: #888;
+    }
+    #logoutBtn {
+      max-width: 300px;
+      width: 90%;
+      padding: 12px 25px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 20px auto;
+      background-color: #555;
+      color: white;
+    }
+    footer { font-size: 0.9rem; color: #666; padding: 10px 0; margin-top: 40px; }
   </style>
 </head>
 <body>
 
   <h1>Solar & Inverter Dashboard</h1>
-  
-  <div class="card-container" id="dashboard">
-    <div class="data-card"><h2>Battery Voltage</h2><p><span id="battVolts">--</span> <span class="unit">V</span></p></div>
-    <div class="data-card"><h2>PV Voltage</h2><p><span id="pvVolts">--</span> <span class="unit">V</span></p></div>
-    <div class="data-card"><h2>PV Power</h2><p><span id="pvPower">--</span> <span class="unit">W</span></p></div>
-    <div class="data-card"><h2>Load Power</h2><p><span id="loadPower">--</span> <span class="unit">W</span></p></div>
-    <div class="data-card"><h2>Inverter Temp</h2><p><span id="invTemp">--</span> <span class="unit">°C</span></p></div>
+
+  <div id="loginForm">
+    <input type="email" id="email" placeholder="Enter Email" required />
+    <input type="password" id="password" placeholder="Enter Password" required />
+    <button id="loginBtn">Login</button>
   </div>
+
+  <div id="dashboard">
+    <div class="card-container">
+      <div class="data-card">
+        <h2>Battery Voltage</h2>
+        <p><span id="battVolts">--</span> <span class="unit">V</span></p>
+      </div>
+      <div class="data-card">
+        <h2>PV Voltage</h2>
+        <p><span id="pvVolts">--</span> <span class="unit">V</span></p>
+      </div>
+      <div class="data-card">
+        <h2>PV Power</h2>
+        <p><span id="pvPower">--</span> <span class="unit">W</span></p>
+      </div>
+      <div class="data-card">
+        <h2>Load Power</h2>
+        <p><span id="loadPower">--</span> <span class="unit">W</span></p>
+      </div>
+      <div class="data-card">
+        <h2>Inverter Temp</h2>
+        <p><span id="invTemp">--</span> <span class="unit">°C</span></p>
+      </div>
+    </div>
+    <button id="logoutBtn">Logout</button>
+  </div>
+
+  <footer>Created by Tech StudyCell (Modified for Telemetry)</footer>
 
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 
   <script>
-    // 1. Your Firebase Config
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyBI4avbS3jlosFI_xxuPhkQ6UQPMiqdxRc",
       authDomain: "esp32relay-c5b1a.firebaseapp.com",
@@ -50,7 +163,7 @@
     const dashboard = document.getElementById("dashboard");
     const loginBtn = document.getElementById("loginBtn");
 
-    // 2. The Login Button Logic
+    // Handle Login
     loginBtn.addEventListener("click", () => {
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
@@ -58,9 +171,9 @@
       if(email === allowedEmail && password === allowedPassword){
         firebase.auth().signInWithEmailAndPassword(email, password)
           .then(userCredential => {
-            console.log("Signed in as", userCredential.user.email);
+            console.log("Signed in successfully!");
             loginForm.style.display = "none";
-            dashboard.style.display = "flex"; // Show the dashboard cards
+            dashboard.style.display = "flex";
             startTelemetryMonitor(); // Start fetching data ONLY after login
           })
           .catch(error => {
@@ -71,38 +184,44 @@
       }
     });
 
-    // 3. The Telemetry Listener (Runs after login)
+    // Handle Data Fetching
     function startTelemetryMonitor() {
       const db = firebase.database();
       const inverterRef = db.ref("/inverter");
 
-      console.log("Listening for data on /inverter...");
-
       inverterRef.on("value", (snapshot) => {
         const data = snapshot.val();
-        console.log("New data received:", data); // Prints data to the F12 Console
-
+        
         if(data) {
-          // Add optional chaining/checks so if one value is missing, the page doesn't break
-          if(data.batteryVoltage !== undefined) document.getElementById("battVolts").innerText = data.batteryVoltage.toFixed(1);
-          if(data.pvVoltage !== undefined) document.getElementById("pvVolts").innerText = data.pvVoltage.toFixed(1);
-          if(data.pvPower !== undefined) document.getElementById("pvPower").innerText = data.pvPower.toFixed(1);
-          if(data.loadPower !== undefined) document.getElementById("loadPower").innerText = data.loadPower;
-          if(data.invTemp !== undefined) document.getElementById("invTemp").innerText = data.invTemp;
+          // Check if data exists before updating HTML to prevent errors
+          if(data.batteryVoltage !== undefined) {
+            document.getElementById("battVolts").innerText = data.batteryVoltage.toFixed(1);
+          }
+          if(data.pvVoltage !== undefined) {
+            document.getElementById("pvVolts").innerText = data.pvVoltage.toFixed(1);
+          }
+          if(data.pvPower !== undefined) {
+            document.getElementById("pvPower").innerText = data.pvPower.toFixed(1);
+          }
+          if(data.loadPower !== undefined) {
+            document.getElementById("loadPower").innerText = data.loadPower;
+          }
+          if(data.invTemp !== undefined) {
+            document.getElementById("invTemp").innerText = data.invTemp;
+          }
         }
-      }, (error) => {
-        console.error("Firebase read blocked:", error);
       });
     }
 
-    // 4. Logout Logic
+    // Handle Logout
     document.getElementById("logoutBtn").onclick = () => {
       firebase.auth().signOut().then(() => {
           dashboard.style.display = "none";
           loginForm.style.display = "block";
+          document.getElementById("email").value = "";
+          document.getElementById("password").value = "";
       });
     };
   </script>
 </body>
 </html>
-
