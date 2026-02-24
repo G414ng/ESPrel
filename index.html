@@ -2,107 +2,29 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Solar & Inverter Telemetry Dashboard</title>
+  <title>Solar Telemetry Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f9f9f9;
-      margin: 0;
-      padding: 0 10px 40px;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      justify-content: space-between;
-    }
-    h1 {
-      margin-top: 30px;
-      font-size: 1.8rem;
-    }
-    /* Login Form Styles */
-    #loginForm {
-      max-width: 400px;
-      margin: 80px auto 20px;
-      background: white;
-      padding: 30px 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    #loginForm input {
-      width: 100%;
-      padding: 12px 15px;
-      margin: 10px 0 20px;
-      font-size: 1rem;
-      border: 1.5px solid #ccc;
-      border-radius: 10px;
-      box-sizing: border-box;
-      transition: border-color 0.3s ease;
-    }
-    #loginForm button {
-      width: 100%;
-      background-color: #1e88e5;
-      color: white;
-      padding: 12px;
-      font-size: 18px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    /* Dashboard & Card Styles */
-    #dashboard {
-      display: none; /* Hidden until logged in */
-      flex-direction: column;
-      align-items: center;
-    }
-    .card-container {
-      max-width: 1000px;
-      margin: 20px auto;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .data-card {
-      background: white;
-      padding: 20px;
-      margin: 15px;
-      border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      width: 200px;
-    }
-    .data-card h2 {
-      margin-bottom: 5px;
-      font-size: 1.1rem;
-      color: #555;
-    }
-    .data-card p {
-      font-size: 2rem;
-      margin: 10px 0;
-      font-weight: bold;
-      color: #1e88e5;
-    }
-    .unit {
-      font-size: 1rem;
-      color: #888;
-    }
-    #logoutBtn {
-      max-width: 300px;
-      width: 90%;
-      padding: 12px 25px;
-      font-size: 16px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      margin: 20px auto;
-      background-color: #555;
-      color: white;
-    }
+    body { font-family: Arial, sans-serif; text-align: center; background-color: #f9f9f9; margin: 0; padding: 0 10px 40px; display: flex; flex-direction: column; min-height: 100vh; justify-content: space-between; }
+    h1 { margin-top: 30px; font-size: 1.8rem; }
+    #loginForm { max-width: 400px; margin: 80px auto 20px; background: white; padding: 30px 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    #loginForm input { width: 100%; padding: 12px 15px; margin: 10px 0 20px; font-size: 1rem; border: 1.5px solid #ccc; border-radius: 10px; box-sizing: border-box; }
+    #loginForm button { width: 100%; background-color: #1e88e5; color: white; padding: 12px; font-size: 18px; border: none; border-radius: 10px; cursor: pointer; }
+    #dashboard { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 1000px; margin: 0 auto; }
+    .card-container { display: flex; flex-wrap: wrap; justify-content: center; width: 100%; }
+    .data-card { background: white; padding: 20px; margin: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 160px; }
+    .data-card h2 { margin-bottom: 5px; font-size: 1.1rem; color: #555; }
+    .data-card p { font-size: 1.8rem; margin: 10px 0; font-weight: bold; color: #1e88e5; }
+    .unit { font-size: 1rem; color: #888; }
+    .chart-container { width: 95%; max-width: 900px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-top: 20px; }
+    #logoutBtn { width: 200px; padding: 12px; font-size: 16px; border: none; border-radius: 10px; cursor: pointer; margin: 20px auto; background-color: #555; color: white; }
     footer { font-size: 0.9rem; color: #666; padding: 10px 0; margin-top: 40px; }
   </style>
 </head>
 <body>
 
-  <h1>Solar & Inverter Dashboard</h1>
+  <h1>Solar Telemetry Dashboard</h1>
 
   <div id="loginForm">
     <input type="email" id="email" placeholder="Enter Email" required />
@@ -112,38 +34,26 @@
 
   <div id="dashboard">
     <div class="card-container">
-      <div class="data-card">
-        <h2>Battery Voltage</h2>
-        <p><span id="battVolts">--</span> <span class="unit">V</span></p>
-      </div>
-      <div class="data-card">
-        <h2>PV Voltage</h2>
-        <p><span id="pvVolts">--</span> <span class="unit">V</span></p>
-      </div>
-      <div class="data-card">
-        <h2>PV Power</h2>
-        <p><span id="pvPower">--</span> <span class="unit">W</span></p>
-      </div>
-      <div class="data-card">
-        <h2>Load Power</h2>
-        <p><span id="loadPower">--</span> <span class="unit">W</span></p>
-      </div>
-      <div class="data-card">
-        <h2>Inverter Temp</h2>
-        <p><span id="invTemp">--</span> <span class="unit">°C</span></p>
-      </div>
+      <div class="data-card"><h2>Battery</h2><p><span id="battVolts">--</span> <span class="unit">V</span></p></div>
+      <div class="data-card"><h2>PV Volts</h2><p><span id="pvVolts">--</span> <span class="unit">V</span></p></div>
+      <div class="data-card"><h2>PV Power</h2><p><span id="pvPower">--</span> <span class="unit">W</span></p></div>
+      <div class="data-card"><h2>Load</h2><p><span id="loadPower">--</span> <span class="unit">W</span></p></div>
     </div>
+
+    <div class="chart-container">
+      <canvas id="historyChart"></canvas>
+    </div>
+
     <button id="logoutBtn">Logout</button>
   </div>
 
-  <footer>Created by Tech StudyCell (Modified for Telemetry)</footer>
+  <footer>Created by Tech StudyCell (Modified for Multi-Tenant)</footer>
 
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 
   <script>
-    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyBI4avbS3jlosFI_xxuPhkQ6UQPMiqdxRc",
       authDomain: "esp32relay-c5b1a.firebaseapp.com",
@@ -156,70 +66,104 @@
 
     firebase.initializeApp(firebaseConfig);
 
-    const allowedEmail = "abc@gmail.com";
-    const allowedPassword = "admin123";
-
     const loginForm = document.getElementById("loginForm");
     const dashboard = document.getElementById("dashboard");
     const loginBtn = document.getElementById("loginBtn");
 
-    // Handle Login
-    loginBtn.addEventListener("click", () => {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
+    let timeLabels = [];
+    let pvPowerData = [];
+    let battVoltageData = [];
+    const maxDataPoints = 360; 
+    let myChart;
 
-      if(email === allowedEmail && password === allowedPassword){
-        firebase.auth().signInWithEmailAndPassword(email, password)
-          .then(userCredential => {
-            console.log("Signed in successfully!");
-            loginForm.style.display = "none";
-            dashboard.style.display = "flex";
-            startTelemetryMonitor(); // Start fetching data ONLY after login
-          })
-          .catch(error => {
-            alert("Firebase login failed: " + error.message);
-          });
-      } else {
-        alert("Invalid email or password.");
-      }
-    });
-
-    // Handle Data Fetching
-    function startTelemetryMonitor() {
-      const db = firebase.database();
-      const inverterRef = db.ref("/inverter");
-
-      inverterRef.on("value", (snapshot) => {
-        const data = snapshot.val();
-        
-        if(data) {
-          // Check if data exists before updating HTML to prevent errors
-          if(data.batteryVoltage !== undefined) {
-            document.getElementById("battVolts").innerText = data.batteryVoltage.toFixed(1);
-          }
-          if(data.pvVoltage !== undefined) {
-            document.getElementById("pvVolts").innerText = data.pvVoltage.toFixed(1);
-          }
-          if(data.pvPower !== undefined) {
-            document.getElementById("pvPower").innerText = data.pvPower.toFixed(1);
-          }
-          if(data.loadPower !== undefined) {
-            document.getElementById("loadPower").innerText = data.loadPower;
-          }
-          if(data.invTemp !== undefined) {
-            document.getElementById("invTemp").innerText = data.invTemp;
+    function initChart() {
+      const ctx = document.getElementById('historyChart').getContext('2d');
+      // Destroy old chart if logging in as a new user
+      if(myChart) myChart.destroy(); 
+      
+      myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: timeLabels,
+          datasets: [
+            { label: 'PV Power (W)', data: pvPowerData, borderColor: '#f39c12', backgroundColor: 'rgba(243, 156, 18, 0.2)', yAxisID: 'y', fill: true, tension: 0.4 },
+            { label: 'Battery (V)', data: battVoltageData, borderColor: '#3498db', yAxisID: 'y1', tension: 0.4 }
+          ]
+        },
+        options: {
+          responsive: true,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            x: { title: { display: true, text: 'Time' } },
+            y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'Watts' } },
+            y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'Volts' }, grid: { drawOnChartArea: false } }
           }
         }
       });
     }
 
-    // Handle Logout
+    loginBtn.addEventListener("click", () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      // Real Firebase Authentication
+      firebase.auth().signInWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          loginForm.style.display = "none";
+          dashboard.style.display = "flex";
+          
+          // Clear chart data in case someone else was logged in
+          timeLabels = []; pvPowerData = []; battVoltageData = [];
+          initChart(); 
+          
+          // Get the UID and start listening
+          const uid = userCredential.user.uid;
+          startTelemetryMonitor(uid); 
+        })
+        .catch(error => { alert("Firebase login failed: " + error.message); });
+    });
+
+    function startTelemetryMonitor(uid) {
+      const db = firebase.database();
+      
+      // Look ONLY at this specific user's folder
+      const inverterRef = db.ref("/users/" + uid + "/inverter");
+
+      inverterRef.on("value", (snapshot) => {
+        const data = snapshot.val();
+        
+        if(data) {
+          if(data.batteryVoltage !== undefined) document.getElementById("battVolts").innerText = data.batteryVoltage.toFixed(1);
+          if(data.pvVoltage !== undefined) document.getElementById("pvVolts").innerText = data.pvVoltage.toFixed(1);
+          if(data.pvPower !== undefined) document.getElementById("pvPower").innerText = data.pvPower.toFixed(1);
+          if(data.loadPower !== undefined) document.getElementById("loadPower").innerText = data.loadPower;
+
+          const now = new Date();
+          const timeString = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ':' + now.getSeconds().toString().padStart(2, '0');
+
+          timeLabels.push(timeString);
+          pvPowerData.push(data.pvPower);
+          battVoltageData.push(data.batteryVoltage);
+
+          if(timeLabels.length > maxDataPoints) {
+            timeLabels.shift();
+            pvPowerData.shift();
+            battVoltageData.shift();
+          }
+          myChart.update();
+        }
+      });
+    }
+
     document.getElementById("logoutBtn").onclick = () => {
       firebase.auth().signOut().then(() => {
           dashboard.style.display = "none";
           loginForm.style.display = "block";
           document.getElementById("email").value = "";
           document.getElementById("password").value = "";
+          
+          // Stop listening to the database when logged out
+          firebase.database().ref().off();
       });
     };
   </script>
