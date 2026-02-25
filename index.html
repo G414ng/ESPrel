@@ -23,7 +23,7 @@
       --card-bg: #1e1e1e;
       --text-main: #f0f0f0;
       --text-muted: #aaa;
-      --text-value: #4ea8de; /* Brighter blue for dark mode readability */
+      --text-value: #4ea8de;
       --border-color: #444;
       --shadow: rgba(0,0,0,0.5);
       --modal-overlay: rgba(0,0,0,0.8);
@@ -47,12 +47,12 @@
     .section-title { width: 100%; text-align: center; font-size: 1.4rem; color: var(--text-main); margin: 30px 0 10px 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 5px; }
     .card-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; width: 100%; }
     
-    .data-card { background: var(--card-bg); padding: 20px 10px; border-radius: 15px; box-shadow: 0 4px 10px var(--shadow); width: 150px; display: flex; flex-direction: column; justify-content: center; transition: 0.3s; }
+    .data-card { background: var(--card-bg); padding: 20px 10px; border-radius: 15px; box-shadow: 0 4px 10px var(--shadow); width: 150px; display: flex; flex-direction: column; justify-content: center; transition: 0.3s; position: relative; }
     .data-card h2 { margin: 0 0 5px 0; font-size: 1rem; color: var(--text-muted); }
     .data-card p { font-size: 1.6rem; margin: 10px 0; font-weight: bold; color: var(--text-value); }
     .unit { font-size: 0.9rem; color: var(--text-muted); }
     
-    .clickable { cursor: pointer; border: 2px solid transparent; position: relative; }
+    .clickable { cursor: pointer; border: 2px solid transparent; }
     .clickable:hover { transform: scale(1.05); border: 2px solid #1e88e5; }
     .clickable p { color: #1e88e5; }
     .clickable::after { content: "📊 Click for Graph"; font-size: 0.75rem; color: #1e88e5; position: absolute; bottom: 5px; width: 100%; left: 0; }
@@ -88,12 +88,19 @@
     <div class="card-container">
       <div class="data-card"><h2>Battery Volts</h2><p><span id="c_batteryVoltage">--</span><span class="unit"> V</span></p></div>
       <div class="data-card"><h2>Grid Voltage</h2><p><span id="c_gridVoltage">--</span><span class="unit"> V</span></p></div>
-      <div class="data-card clickable" onclick="openGraph('outputVoltage', 'Output Voltage (V)', '#3498db')">
+      
+      <div class="data-card clickable" onclick="openGraph('line', 'outputVoltage', 'Output Voltage (Last 30m)', '#3498db')">
         <h2>Output Voltage</h2><p><span id="c_outputVoltage">--</span><span class="unit"> V</span></p>
       </div>
-      <div class="data-card clickable" onclick="openGraph('loadPower', 'Load Power (W)', '#e74c3c')">
+      
+      <div class="data-card clickable" onclick="openGraph('line', 'loadPower', 'Load Power (Last 30m)', '#e74c3c')">
         <h2>Load Power</h2><p><span id="c_loadPower">--</span><span class="unit"> W</span></p>
       </div>
+
+      <div class="data-card clickable" onclick="openGraph('bar', 'dailyKWh', 'Load Energy (Last 7 Days)', '#f39c12')">
+        <h2>Daily Load Energy</h2><p><span id="c_inv_dayEnergy">--</span><span class="unit"> kWh</span></p>
+      </div>
+      
       <div class="data-card"><h2>Inverter Temp</h2><p><span id="c_invTemp">--</span><span class="unit"> °C</span></p></div>
     </div>
 
@@ -101,9 +108,11 @@
     <div class="card-container">
       <div class="data-card"><h2>Battery Volts</h2><p><span id="c_tf1_batVoltage">--</span><span class="unit"> V</span></p></div>
       <div class="data-card"><h2>PV Voltage</h2><p><span id="c_tf1_pvVoltage">--</span><span class="unit"> V</span></p></div>
-      <div class="data-card clickable" onclick="openGraph('tf1_chargePower', 'MPPT 1 Charge Power (W)', '#2ecc71')">
+      
+      <div class="data-card clickable" onclick="openGraph('line', 'tf1_chargePower', 'MPPT 1 Power (Last 30m)', '#2ecc71')">
         <h2>Charge Power</h2><p><span id="c_tf1_chargePower">--</span><span class="unit"> W</span></p>
       </div>
+      
       <div class="data-card"><h2>Heatsink Temp</h2><p><span id="c_tf1_heatsinkTemp">--</span><span class="unit"> °C</span></p></div>
       <div class="data-card"><h2>Day Energy</h2><p><span id="c_tf1_dayEnergy">--</span><span class="unit"> kWh</span></p></div>
     </div>
@@ -112,9 +121,11 @@
     <div class="card-container">
       <div class="data-card"><h2>Battery Volts</h2><p><span id="c_tf2_batVoltage">--</span><span class="unit"> V</span></p></div>
       <div class="data-card"><h2>PV Voltage</h2><p><span id="c_tf2_pvVoltage">--</span><span class="unit"> V</span></p></div>
-      <div class="data-card clickable" onclick="openGraph('tf2_chargePower', 'MPPT 2 Charge Power (W)', '#1abc9c')">
+      
+      <div class="data-card clickable" onclick="openGraph('line', 'tf2_chargePower', 'MPPT 2 Power (Last 30m)', '#1abc9c')">
         <h2>Charge Power</h2><p><span id="c_tf2_chargePower">--</span><span class="unit"> W</span></p>
       </div>
+      
       <div class="data-card"><h2>Heatsink Temp</h2><p><span id="c_tf2_heatsinkTemp">--</span><span class="unit"> °C</span></p></div>
       <div class="data-card"><h2>Day Energy</h2><p><span id="c_tf2_dayEnergy">--</span><span class="unit"> kWh</span></p></div>
     </div>
@@ -143,11 +154,10 @@
     const themeToggle = document.getElementById('themeToggle');
     const body = document.body;
 
-    // Check memory for saved theme
     if (localStorage.getItem('theme') === 'dark') {
       body.classList.add('dark-mode');
       themeToggle.innerText = '☀️ Light Mode';
-      Chart.defaults.color = '#aaa'; // Make graph text readable in dark mode
+      Chart.defaults.color = '#aaa'; 
     }
 
     themeToggle.addEventListener('click', () => {
@@ -161,7 +171,7 @@
         themeToggle.innerText = '🌙 Dark Mode';
         Chart.defaults.color = '#666'; 
       }
-      if (myChart) myChart.update(); // Update graph colors instantly if open
+      if (myChart) myChart.update(); 
     });
 
     // Firebase Config
@@ -181,17 +191,16 @@
     const dashboard = document.getElementById("dashboard");
     const loginBtn = document.getElementById("loginBtn");
 
-    let timeLabels = [];
-    let historyData = {
-      outputVoltage: [],
-      loadPower: [],
-      tf1_chargePower: [],
-      tf2_chargePower: []
-    };
-    const maxDataPoints = 360; 
+    // History Data Arrays
+    let timeLabels30m = [];
+    let hist30m = { outputVoltage: [], loadPower: [], tf1_chargePower: [], tf2_chargePower: [] };
+    
+    let dayLabels7d = [];
+    let hist7d = { dailyKWh: [] };
 
     let myChart = null;
     let currentGraphKey = null; 
+    let currentGraphType = 'line'; 
 
     loginBtn.addEventListener("click", () => {
       const email = document.getElementById("email").value.trim();
@@ -201,11 +210,6 @@
         .then(userCredential => {
           loginForm.style.display = "none";
           dashboard.style.display = "flex";
-          
-          timeLabels = []; 
-          historyData.outputVoltage = []; historyData.loadPower = []; 
-          historyData.tf1_chargePower = []; historyData.tf2_chargePower = [];
-          
           startTelemetryMonitor(userCredential.user.uid); 
         })
         .catch(error => { alert("Firebase login failed: " + error.message); });
@@ -216,50 +220,89 @@
 
     function startTelemetryMonitor(uid) {
       const db = firebase.database();
-      const inverterRef = db.ref("/users/" + uid + "/inverter");
-
-      inverterRef.on("value", (snapshot) => {
+      
+      // 1. LISTEN TO LIVE DATA (Updates every 5 seconds)
+      const liveRef = db.ref("/users/" + uid + "/inverter/live");
+      liveRef.on("value", (snapshot) => {
         const data = snapshot.val();
         if(data) {
-          if(data.timestamp !== undefined) lastDataTime = data.timestamp;
-
+          lastDataTime = Date.now(); // Update watchdog timer
+          
           const params = [
-            "batteryVoltage", "gridVoltage", "outputVoltage", "loadPower", "invTemp",
+            "batteryVoltage", "gridVoltage", "outputVoltage", "loadPower", "invTemp", "inv_dayEnergy",
             "tf1_batVoltage", "tf1_pvVoltage", "tf1_chargePower", "tf1_heatsinkTemp", "tf1_dayEnergy",
             "tf2_batVoltage", "tf2_pvVoltage", "tf2_chargePower", "tf2_heatsinkTemp", "tf2_dayEnergy"
           ];
           
           params.forEach(param => {
             if(data[param] !== undefined) {
-              document.getElementById("c_" + param).innerText = data[param].toFixed ? data[param].toFixed(1) : data[param];
+              const el = document.getElementById("c_" + param);
+              if(el) el.innerText = data[param].toFixed ? data[param].toFixed(1) : data[param];
             }
           });
-
-          const now = new Date();
-          const timeString = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ':' + now.getSeconds().toString().padStart(2, '0');
-
-          timeLabels.push(timeString);
-          historyData.outputVoltage.push(data.outputVoltage || 0);
-          historyData.loadPower.push(data.loadPower || 0);
-          historyData.tf1_chargePower.push(data.tf1_chargePower || 0);
-          historyData.tf2_chargePower.push(data.tf2_chargePower || 0);
-
-          if(timeLabels.length > maxDataPoints) {
-            timeLabels.shift();
-            historyData.outputVoltage.shift();
-            historyData.loadPower.shift();
-            historyData.tf1_chargePower.shift();
-            historyData.tf2_chargePower.shift();
-          }
-
-          if(myChart && currentGraphKey) {
-            myChart.data.labels = timeLabels;
-            myChart.data.datasets[0].data = historyData[currentGraphKey];
-            myChart.update('none'); 
-          }
         }
       });
 
+      // 2. LISTEN TO 30-MINUTE HISTORY (Only fetch the last 30 data points)
+      const history30mRef = db.ref("/users/" + uid + "/inverter/history_30m").limitToLast(30);
+      history30mRef.on("value", (snapshot) => {
+        timeLabels30m = [];
+        hist30m.outputVoltage = [];
+        hist30m.loadPower = [];
+        hist30m.tf1_chargePower = [];
+        hist30m.tf2_chargePower = [];
+
+        snapshot.forEach((childSnapshot) => {
+          const data = childSnapshot.val();
+          
+          // Convert Firebase timestamp to readable HH:MM string
+          let timeString = "";
+          if(data.timestamp) {
+            const date = new Date(data.timestamp);
+            timeString = date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0');
+          }
+          
+          timeLabels30m.push(timeString);
+          hist30m.outputVoltage.push(data.outputVoltage || 0);
+          hist30m.loadPower.push(data.loadPower || 0);
+          hist30m.tf1_chargePower.push(data.tf1_chargePower || 0);
+          hist30m.tf2_chargePower.push(data.tf2_chargePower || 0);
+        });
+
+        // Update chart smoothly if it is currently open
+        if(myChart && currentGraphType === 'line' && currentGraphKey) {
+          myChart.data.labels = timeLabels30m;
+          myChart.data.datasets[0].data = hist30m[currentGraphKey];
+          myChart.update('none'); 
+        }
+      });
+
+      // 3. LISTEN TO 7-DAY KWH HISTORY (Only fetch the last 7 days)
+      const history7dRef = db.ref("/users/" + uid + "/inverter/daily_kwh").limitToLast(7);
+      history7dRef.on("value", (snapshot) => {
+        dayLabels7d = [];
+        hist7d.dailyKWh = [];
+
+        snapshot.forEach((childSnapshot) => {
+          // The key is the date (e.g., "2023-10-25")
+          const dateKey = childSnapshot.key;
+          // Format date for the graph (e.g., "Oct 25")
+          const dateObj = new Date(dateKey);
+          const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          
+          dayLabels7d.push(formattedDate);
+          hist7d.dailyKWh.push(childSnapshot.val() || 0);
+        });
+
+        // Update chart smoothly if the bar chart is open
+        if(myChart && currentGraphType === 'bar' && currentGraphKey === 'dailyKWh') {
+          myChart.data.labels = dayLabels7d;
+          myChart.data.datasets[0].data = hist7d.dailyKWh;
+          myChart.update('none');
+        }
+      });
+
+      // Watchdog Timer for Online/Offline Status
       if(watchdogTimer) clearInterval(watchdogTimer);
       watchdogTimer = setInterval(() => {
         if (lastDataTime === 0) return; 
@@ -276,26 +319,43 @@
       }, 1000);
     }
 
-    function openGraph(dataKey, title, colorHex) {
+    // Function to draw either a Line Chart (30m) or Bar Chart (7 days)
+    function openGraph(type, dataKey, title, colorHex) {
+      currentGraphType = type;
       currentGraphKey = dataKey;
+      
       document.getElementById("modalTitle").innerText = title;
       document.getElementById("graphModal").style.display = "block";
 
       const ctx = document.getElementById('popupChart').getContext('2d');
       if(myChart) myChart.destroy();
 
+      // Decide which data arrays to use based on the graph type
+      let labelsArray = [];
+      let dataArray = [];
+
+      if (type === 'line') {
+        labelsArray = timeLabels30m;
+        dataArray = hist30m[dataKey];
+      } else if (type === 'bar') {
+        labelsArray = dayLabels7d;
+        dataArray = hist7d[dataKey];
+      }
+
       myChart = new Chart(ctx, {
-        type: 'line',
+        type: type, // 'line' or 'bar'
         data: {
-          labels: timeLabels,
+          labels: labelsArray,
           datasets: [{
             label: title,
-            data: historyData[dataKey],
+            data: dataArray,
             borderColor: colorHex,
-            backgroundColor: colorHex + '33',
-            fill: true,
+            backgroundColor: type === 'line' ? colorHex + '33' : colorHex + '99',
+            fill: type === 'line',
             tension: 0.3,
-            pointRadius: 0
+            pointRadius: type === 'line' ? 0 : 3,
+            borderWidth: 2,
+            borderRadius: type === 'bar' ? 4 : 0
           }]
         },
         options: { 
@@ -303,7 +363,10 @@
           interaction: { mode: 'index', intersect: false },
           scales: {
             x: { grid: { color: document.body.classList.contains('dark-mode') ? '#444' : '#ddd' } },
-            y: { grid: { color: document.body.classList.contains('dark-mode') ? '#444' : '#ddd' } }
+            y: { 
+              beginAtZero: true,
+              grid: { color: document.body.classList.contains('dark-mode') ? '#444' : '#ddd' } 
+            }
           }
         }
       });
