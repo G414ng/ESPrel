@@ -6,63 +6,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* 1. CSS VARIABLES (THEMES) */
-    :root {
-      --bg-color: #f9f9f9;
-      --card-bg: white;
-      --text-main: #333;
-      --text-muted: #555;
-      --text-value: #555;
-      --border-color: #ddd;
-      --shadow: rgba(0,0,0,0.1);
-      --modal-overlay: rgba(0,0,0,0.6);
-    }
-
-    body.dark-mode {
-      --bg-color: #121212;
-      --card-bg: #1e1e1e;
-      --text-main: #f0f0f0;
-      --text-muted: #aaa;
-      --text-value: #4ea8de;
-      --border-color: #444;
-      --shadow: rgba(0,0,0,0.5);
-      --modal-overlay: rgba(0,0,0,0.8);
-    }
-
-    body { font-family: Arial, sans-serif; text-align: center; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0 10px 40px; display: flex; flex-direction: column; min-height: 100vh; justify-content: space-between; transition: background-color 0.3s, color 0.3s; }
-    
-    /* Theme Toggle Button */
-    #themeToggle { position: absolute; top: 20px; right: 20px; padding: 8px 12px; border-radius: 8px; cursor: pointer; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); font-size: 0.9rem; transition: 0.3s; }
-    #themeToggle:hover { transform: scale(1.05); }
-
+    :root { --bg-color: #f9f9f9; --card-bg: white; --text-main: #333; --text-muted: #555; --text-value: #555; --border-color: #ddd; --shadow: rgba(0,0,0,0.1); --modal-overlay: rgba(0,0,0,0.6); }
+    body.dark-mode { --bg-color: #121212; --card-bg: #1e1e1e; --text-main: #f0f0f0; --text-muted: #aaa; --text-value: #4ea8de; --border-color: #444; --shadow: rgba(0,0,0,0.5); --modal-overlay: rgba(0,0,0,0.8); }
+    body { font-family: Arial, sans-serif; text-align: center; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0 10px 40px; display: flex; flex-direction: column; min-height: 100vh; justify-content: space-between; transition: 0.3s; }
+    #themeToggle { position: absolute; top: 20px; right: 20px; padding: 8px 12px; border-radius: 8px; cursor: pointer; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); transition: 0.3s; }
     h1 { margin-top: 30px; font-size: 1.8rem; }
-    
     #loginForm { max-width: 400px; margin: 80px auto 20px; background: var(--card-bg); padding: 30px 20px; border-radius: 15px; box-shadow: 0 4px 12px var(--shadow); }
     #loginForm input { width: 100%; padding: 12px 15px; margin: 10px 0 20px; font-size: 1rem; border: 1.5px solid var(--border-color); border-radius: 10px; box-sizing: border-box; background: var(--bg-color); color: var(--text-main); }
     #loginForm button { width: 100%; background-color: #1e88e5; color: white; padding: 12px; font-size: 18px; border: none; border-radius: 10px; cursor: pointer; }
-    
     #dashboard { display: none; flex-direction: column; align-items: center; width: 100%; max-width: 1200px; margin: 0 auto; }
     #statusBanner { margin-top: 10px; margin-bottom: 20px; font-size: 1.2rem; background: var(--card-bg); padding: 10px 20px; border-radius: 20px; box-shadow: 0 2px 5px var(--shadow); }
-    
     .section-title { width: 100%; text-align: center; font-size: 1.4rem; color: var(--text-main); margin: 30px 0 10px 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 5px; }
     .card-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; width: 100%; }
-    
     .data-card { background: var(--card-bg); padding: 20px 10px; border-radius: 15px; box-shadow: 0 4px 10px var(--shadow); width: 150px; display: flex; flex-direction: column; justify-content: center; transition: 0.3s; position: relative; }
     .data-card h2 { margin: 0 0 5px 0; font-size: 1rem; color: var(--text-muted); }
     .data-card p { font-size: 1.6rem; margin: 10px 0; font-weight: bold; color: var(--text-value); }
     .unit { font-size: 0.9rem; color: var(--text-muted); }
-    
     .clickable { cursor: pointer; border: 2px solid transparent; }
     .clickable:hover { transform: scale(1.05); border: 2px solid #1e88e5; }
     .clickable p { color: #1e88e5; }
     .clickable::after { content: "📊 Click for Graph"; font-size: 0.75rem; color: #1e88e5; position: absolute; bottom: 5px; width: 100%; left: 0; }
-    
     .modal { display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; background-color: var(--modal-overlay); backdrop-filter: blur(3px); }
     .modal-content { background-color: var(--card-bg); color: var(--text-main); margin: 10vh auto; padding: 20px; border-radius: 15px; width: 90%; max-width: 800px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); position: relative; }
     .close { color: var(--text-muted); float: right; font-size: 28px; font-weight: bold; cursor: pointer; margin-top: -10px; }
-    .close:hover { color: #d32f2f; }
     .chart-container { width: 100%; margin-top: 20px; }
-    
     #logoutBtn { width: 200px; padding: 12px; font-size: 16px; border: none; border-radius: 10px; cursor: pointer; margin: 40px auto; background-color: #555; color: white; }
     footer { font-size: 0.9rem; color: var(--text-muted); padding: 10px 0; margin-top: 40px; }
   </style>
@@ -70,7 +37,6 @@
 <body>
 
   <button id="themeToggle">🌙 Dark Mode</button>
-
   <h1>Realtime Dashboard</h1>
 
   <div id="loginForm">
@@ -80,27 +46,21 @@
   </div>
 
   <div id="dashboard">
-    <div id="statusBanner">
-      Status: <span id="deviceStatus" style="color: orange; font-weight: bold;">Connecting...</span>
-    </div>
+    <div id="statusBanner">Status: <span id="deviceStatus" style="color: orange; font-weight: bold;">Connecting...</span></div>
 
     <div class="section-title">⚡ ASPRO Inverter</div>
     <div class="card-container">
       <div class="data-card"><h2>Battery Volts</h2><p><span id="c_batteryVoltage">--</span><span class="unit"> V</span></p></div>
       <div class="data-card"><h2>Grid Voltage</h2><p><span id="c_gridVoltage">--</span><span class="unit"> V</span></p></div>
-      
-      <div class="data-card clickable" onclick="openGraph('line', 'outputVoltage', 'Output Voltage (Last 30m)', '#3498db')">
+      <div class="data-card clickable" onclick="openGraph('line', 'volt', 'Output Voltage', '#3498db')">
         <h2>Output Voltage</h2><p><span id="c_outputVoltage">--</span><span class="unit"> V</span></p>
       </div>
-      
-      <div class="data-card clickable" onclick="openGraph('line', 'loadPower', 'Load Power (Last 30m)', '#e74c3c')">
+      <div class="data-card clickable" onclick="openGraph('line', 'load', 'Load Power', '#e74c3c')">
         <h2>Load Power</h2><p><span id="c_loadPower">--</span><span class="unit"> W</span></p>
       </div>
-
-      <div class="data-card clickable" onclick="openGraph('bar', 'dailyKWh', 'Load Energy (Last 7 Days)', '#f39c12')">
+      <div class="data-card clickable" onclick="openGraph('bar', 'dailyKWh', 'Load Energy', '#f39c12')">
         <h2>Daily Load Energy</h2><p><span id="c_inv_dayEnergy">--</span><span class="unit"> kWh</span></p>
       </div>
-      
       <div class="data-card"><h2>Inverter Temp</h2><p><span id="c_invTemp">--</span><span class="unit"> °C</span></p></div>
     </div>
 
@@ -108,11 +68,9 @@
     <div class="card-container">
       <div class="data-card"><h2>Battery Volts</h2><p><span id="c_tf1_batVoltage">--</span><span class="unit"> V</span></p></div>
       <div class="data-card"><h2>PV Voltage</h2><p><span id="c_tf1_pvVoltage">--</span><span class="unit"> V</span></p></div>
-      
-      <div class="data-card clickable" onclick="openGraph('line', 'tf1_chargePower', 'MPPT 1 Power (Last 30m)', '#2ecc71')">
+      <div class="data-card clickable" onclick="openGraph('line', 'tf1_chg', 'MPPT 1 Power', '#2ecc71')">
         <h2>Charge Power</h2><p><span id="c_tf1_chargePower">--</span><span class="unit"> W</span></p>
       </div>
-      
       <div class="data-card"><h2>Heatsink Temp</h2><p><span id="c_tf1_heatsinkTemp">--</span><span class="unit"> °C</span></p></div>
       <div class="data-card"><h2>Day Energy</h2><p><span id="c_tf1_dayEnergy">--</span><span class="unit"> kWh</span></p></div>
     </div>
@@ -121,11 +79,9 @@
     <div class="card-container">
       <div class="data-card"><h2>Battery Volts</h2><p><span id="c_tf2_batVoltage">--</span><span class="unit"> V</span></p></div>
       <div class="data-card"><h2>PV Voltage</h2><p><span id="c_tf2_pvVoltage">--</span><span class="unit"> V</span></p></div>
-      
-      <div class="data-card clickable" onclick="openGraph('line', 'tf2_chargePower', 'MPPT 2 Power (Last 30m)', '#1abc9c')">
+      <div class="data-card clickable" onclick="openGraph('line', 'tf2_chg', 'MPPT 2 Power', '#1abc9c')">
         <h2>Charge Power</h2><p><span id="c_tf2_chargePower">--</span><span class="unit"> W</span></p>
       </div>
-      
       <div class="data-card"><h2>Heatsink Temp</h2><p><span id="c_tf2_heatsinkTemp">--</span><span class="unit"> °C</span></p></div>
       <div class="data-card"><h2>Day Energy</h2><p><span id="c_tf2_dayEnergy">--</span><span class="unit"> kWh</span></p></div>
     </div>
@@ -137,9 +93,7 @@
     <div class="modal-content">
       <span class="close" onclick="closeGraph()">&times;</span>
       <h2 id="modalTitle">Graph</h2>
-      <div class="chart-container">
-        <canvas id="popupChart"></canvas>
-      </div>
+      <div class="chart-container"><canvas id="popupChart"></canvas></div>
     </div>
   </div>
 
@@ -150,245 +104,150 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 
   <script>
-    // Theme Toggle Logic
     const themeToggle = document.getElementById('themeToggle');
     const body = document.body;
-
-    if (localStorage.getItem('theme') === 'dark') {
-      body.classList.add('dark-mode');
-      themeToggle.innerText = '☀️ Light Mode';
-      Chart.defaults.color = '#aaa'; 
-    }
-
+    if (localStorage.getItem('theme') === 'dark') { body.classList.add('dark-mode'); Chart.defaults.color = '#aaa'; }
     themeToggle.addEventListener('click', () => {
       body.classList.toggle('dark-mode');
-      if (body.classList.contains('dark-mode')) {
-        localStorage.setItem('theme', 'dark');
-        themeToggle.innerText = '☀️ Light Mode';
-        Chart.defaults.color = '#aaa'; 
-      } else {
-        localStorage.setItem('theme', 'light');
-        themeToggle.innerText = '🌙 Dark Mode';
-        Chart.defaults.color = '#666'; 
-      }
+      if (body.classList.contains('dark-mode')) { localStorage.setItem('theme', 'dark'); Chart.defaults.color = '#aaa'; } 
+      else { localStorage.setItem('theme', 'light'); Chart.defaults.color = '#666'; }
       if (myChart) myChart.update(); 
     });
 
-    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyBI4avbS3jlosFI_xxuPhkQ6UQPMiqdxRc",
       authDomain: "esp32relay-c5b1a.firebaseapp.com",
       databaseURL: "https://esp32relay-c5b1a-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "esp32relay-c5b1a",
-      storageBucket: "esp32relay-c5b1a.firebasestorage.app",
-      messagingSenderId: "687848660895",
-      appId: "1:687848660895:web:a0c4e2ef61391536bbe7aa"
+      projectId: "esp32relay-c5b1a"
     };
-
     firebase.initializeApp(firebaseConfig);
 
     const loginForm = document.getElementById("loginForm");
     const dashboard = document.getElementById("dashboard");
     const loginBtn = document.getElementById("loginBtn");
 
-    // History Data Arrays
     let timeLabels30m = [];
-    let hist30m = { outputVoltage: [], loadPower: [], tf1_chargePower: [], tf2_chargePower: [] };
-    
-    let dayLabels7d = [];
-    let hist7d = { dailyKWh: [] };
-
-    let myChart = null;
-    let currentGraphKey = null; 
-    let currentGraphType = 'line'; 
+    let hist30m = {
+      volt: { max: [], min: [], avg: [] },
+      load: { max: [], min: [], avg: [] },
+      tf1_chg: { max: [], min: [], avg: [] },
+      tf2_chg: { max: [], min: [], avg: [] }
+    };
+    let dayLabels7d = []; let hist7d = { dailyKWh: [] };
+    let myChart = null; let currentGraphKey = null; let currentGraphType = 'line'; 
 
     loginBtn.addEventListener("click", () => {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      firebase.auth().signInWithEmailAndPassword(email, password)
+      firebase.auth().signInWithEmailAndPassword(document.getElementById("email").value.trim(), document.getElementById("password").value)
         .then(userCredential => {
-          loginForm.style.display = "none";
-          dashboard.style.display = "flex";
-          startTelemetryMonitor(userCredential.user.uid); 
-        })
-        .catch(error => { alert("Firebase login failed: " + error.message); });
+          loginForm.style.display = "none"; dashboard.style.display = "flex"; startTelemetryMonitor(userCredential.user.uid); 
+        }).catch(err => alert("Login failed: " + err.message));
     });
 
-    let lastDataTime = 0;
-    let watchdogTimer = null;
+    let lastDataTime = 0; let watchdogTimer = null;
 
     function startTelemetryMonitor(uid) {
       const db = firebase.database();
       
-      // 1. LISTEN TO LIVE DATA (Updates every 5 seconds)
-      const liveRef = db.ref("/users/" + uid + "/inverter/live");
-      liveRef.on("value", (snapshot) => {
+      db.ref("/users/" + uid + "/inverter/live").on("value", (snapshot) => {
         const data = snapshot.val();
         if(data) {
-          lastDataTime = Date.now(); // Update watchdog timer
-          
+          lastDataTime = Date.now(); 
           const params = [
             "batteryVoltage", "gridVoltage", "outputVoltage", "loadPower", "invTemp", "inv_dayEnergy",
             "tf1_batVoltage", "tf1_pvVoltage", "tf1_chargePower", "tf1_heatsinkTemp", "tf1_dayEnergy",
             "tf2_batVoltage", "tf2_pvVoltage", "tf2_chargePower", "tf2_heatsinkTemp", "tf2_dayEnergy"
           ];
-          
           params.forEach(param => {
-            if(data[param] !== undefined) {
-              const el = document.getElementById("c_" + param);
-              if(el) el.innerText = data[param].toFixed ? data[param].toFixed(1) : data[param];
+            if(data[param] !== undefined && document.getElementById("c_" + param)) {
+              document.getElementById("c_" + param).innerText = data[param].toFixed ? data[param].toFixed(1) : data[param];
             }
           });
         }
       });
 
-      // 2. LISTEN TO 30-MINUTE HISTORY (Only fetch the last 30 data points)
-      const history30mRef = db.ref("/users/" + uid + "/inverter/history_30m").limitToLast(30);
-      history30mRef.on("value", (snapshot) => {
+      db.ref("/users/" + uid + "/inverter/history_30m").limitToLast(30).on("value", (snapshot) => {
         timeLabels30m = [];
-        hist30m.outputVoltage = [];
-        hist30m.loadPower = [];
-        hist30m.tf1_chargePower = [];
-        hist30m.tf2_chargePower = [];
+        hist30m = { volt: {max:[],min:[],avg:[]}, load: {max:[],min:[],avg:[]}, tf1_chg: {max:[],min:[],avg:[]}, tf2_chg: {max:[],min:[],avg:[]} };
 
-        snapshot.forEach((childSnapshot) => {
-          const data = childSnapshot.val();
-          
-          // Convert Firebase timestamp to readable HH:MM string
+        snapshot.forEach((child) => {
+          const data = child.val();
           let timeString = "";
           if(data.timestamp) {
-            const date = new Date(data.timestamp);
-            timeString = date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0');
+            const d = new Date(data.timestamp);
+            timeString = d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
           }
-          
           timeLabels30m.push(timeString);
-          hist30m.outputVoltage.push(data.outputVoltage || 0);
-          hist30m.loadPower.push(data.loadPower || 0);
-          hist30m.tf1_chargePower.push(data.tf1_chargePower || 0);
-          hist30m.tf2_chargePower.push(data.tf2_chargePower || 0);
+          
+          hist30m.volt.max.push(data.volt_max || 0); hist30m.volt.min.push(data.volt_min || 0); hist30m.volt.avg.push(data.volt_avg || 0);
+          hist30m.load.max.push(data.load_max || 0); hist30m.load.min.push(data.load_min || 0); hist30m.load.avg.push(data.load_avg || 0);
+          hist30m.tf1_chg.max.push(data.tf1_max || 0); hist30m.tf1_chg.min.push(data.tf1_min || 0); hist30m.tf1_chg.avg.push(data.tf1_avg || 0);
+          hist30m.tf2_chg.max.push(data.tf2_max || 0); hist30m.tf2_chg.min.push(data.tf2_min || 0); hist30m.tf2_chg.avg.push(data.tf2_avg || 0);
         });
 
-        // Update chart smoothly if it is currently open
         if(myChart && currentGraphType === 'line' && currentGraphKey) {
           myChart.data.labels = timeLabels30m;
-          myChart.data.datasets[0].data = hist30m[currentGraphKey];
+          myChart.data.datasets[0].data = hist30m[currentGraphKey].avg;
+          myChart.data.datasets[1].data = hist30m[currentGraphKey].max;
+          myChart.data.datasets[2].data = hist30m[currentGraphKey].min;
           myChart.update('none'); 
         }
       });
 
-      // 3. LISTEN TO 7-DAY KWH HISTORY (Only fetch the last 7 days)
-      const history7dRef = db.ref("/users/" + uid + "/inverter/daily_kwh").limitToLast(7);
-      history7dRef.on("value", (snapshot) => {
-        dayLabels7d = [];
-        hist7d.dailyKWh = [];
-
-        snapshot.forEach((childSnapshot) => {
-          // The key is the date (e.g., "2023-10-25")
-          const dateKey = childSnapshot.key;
-          // Format date for the graph (e.g., "Oct 25")
-          const dateObj = new Date(dateKey);
-          const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-          
-          dayLabels7d.push(formattedDate);
-          hist7d.dailyKWh.push(childSnapshot.val() || 0);
+      db.ref("/users/" + uid + "/inverter/daily_kwh").limitToLast(7).on("value", (snapshot) => {
+        dayLabels7d = []; hist7d.dailyKWh = [];
+        snapshot.forEach((child) => {
+          dayLabels7d.push(new Date(child.key).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+          hist7d.dailyKWh.push(child.val() || 0);
         });
-
-        // Update chart smoothly if the bar chart is open
         if(myChart && currentGraphType === 'bar' && currentGraphKey === 'dailyKWh') {
-          myChart.data.labels = dayLabels7d;
-          myChart.data.datasets[0].data = hist7d.dailyKWh;
-          myChart.update('none');
+          myChart.data.labels = dayLabels7d; myChart.data.datasets[0].data = hist7d.dailyKWh; myChart.update('none');
         }
       });
 
-      // Watchdog Timer for Online/Offline Status
       if(watchdogTimer) clearInterval(watchdogTimer);
       watchdogTimer = setInterval(() => {
         if (lastDataTime === 0) return; 
-        const timeDiff = Date.now() - lastDataTime;
         const statusBadge = document.getElementById("deviceStatus");
-
-        if (timeDiff > 20000) {
-          statusBadge.innerText = "OFFLINE 🔴";
-          statusBadge.style.color = "red";
-        } else {
-          statusBadge.innerText = "ONLINE 🟢";
-          statusBadge.style.color = "green";
-        }
+        if (Date.now() - lastDataTime > 20000) { statusBadge.innerText = "OFFLINE 🔴"; statusBadge.style.color = "red"; } 
+        else { statusBadge.innerText = "ONLINE 🟢"; statusBadge.style.color = "green"; }
       }, 1000);
     }
 
-    // Function to draw either a Line Chart (30m) or Bar Chart (7 days)
     function openGraph(type, dataKey, title, colorHex) {
-      currentGraphType = type;
-      currentGraphKey = dataKey;
-      
+      currentGraphType = type; currentGraphKey = dataKey;
       document.getElementById("modalTitle").innerText = title;
       document.getElementById("graphModal").style.display = "block";
 
       const ctx = document.getElementById('popupChart').getContext('2d');
       if(myChart) myChart.destroy();
 
-      // Decide which data arrays to use based on the graph type
-      let labelsArray = [];
-      let dataArray = [];
-
+      let datasetsArray = [];
       if (type === 'line') {
-        labelsArray = timeLabels30m;
-        dataArray = hist30m[dataKey];
+        datasetsArray = [
+          { label: 'Average', data: hist30m[dataKey].avg, borderColor: colorHex, backgroundColor: colorHex + '33', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 2 },
+          { label: 'Max Peak', data: hist30m[dataKey].max, borderColor: '#e74c3c', borderDash: [5, 5], fill: false, tension: 0.3, pointRadius: 0, borderWidth: 1 },
+          { label: 'Min Dip', data: hist30m[dataKey].min, borderColor: '#3498db', borderDash: [5, 5], fill: false, tension: 0.3, pointRadius: 0, borderWidth: 1 }
+        ];
       } else if (type === 'bar') {
-        labelsArray = dayLabels7d;
-        dataArray = hist7d[dataKey];
+        datasetsArray = [{ label: title, data: hist7d[dataKey], backgroundColor: colorHex + '99', borderColor: colorHex, borderWidth: 2, borderRadius: 4 }];
       }
 
       myChart = new Chart(ctx, {
-        type: type, // 'line' or 'bar'
-        data: {
-          labels: labelsArray,
-          datasets: [{
-            label: title,
-            data: dataArray,
-            borderColor: colorHex,
-            backgroundColor: type === 'line' ? colorHex + '33' : colorHex + '99',
-            fill: type === 'line',
-            tension: 0.3,
-            pointRadius: type === 'line' ? 0 : 3,
-            borderWidth: 2,
-            borderRadius: type === 'bar' ? 4 : 0
-          }]
-        },
+        type: type,
+        data: { labels: type === 'line' ? timeLabels30m : dayLabels7d, datasets: datasetsArray },
         options: { 
-          responsive: true, 
-          interaction: { mode: 'index', intersect: false },
+          responsive: true, interaction: { mode: 'index', intersect: false },
           scales: {
             x: { grid: { color: document.body.classList.contains('dark-mode') ? '#444' : '#ddd' } },
-            y: { 
-              beginAtZero: true,
-              grid: { color: document.body.classList.contains('dark-mode') ? '#444' : '#ddd' } 
-            }
+            y: { beginAtZero: type === 'bar', grid: { color: document.body.classList.contains('dark-mode') ? '#444' : '#ddd' } }
           }
         }
       });
     }
 
-    function closeGraph() {
-      document.getElementById("graphModal").style.display = "none";
-      currentGraphKey = null;
-    }
-
-    window.onclick = function(event) {
-      const modal = document.getElementById("graphModal");
-      if (event.target == modal) closeGraph();
-    }
-
-    document.getElementById("logoutBtn").onclick = () => {
-      firebase.auth().signOut().then(() => {
-          dashboard.style.display = "none";
-          loginForm.style.display = "block";
-          firebase.database().ref().off();
-      });
-    };
+    function closeGraph() { document.getElementById("graphModal").style.display = "none"; currentGraphKey = null; }
+    window.onclick = function(event) { if (event.target == document.getElementById("graphModal")) closeGraph(); }
+    document.getElementById("logoutBtn").onclick = () => { firebase.auth().signOut().then(() => { dashboard.style.display = "none"; loginForm.style.display = "block"; firebase.database().ref().off(); }); };
   </script>
 </body>
 </html>
